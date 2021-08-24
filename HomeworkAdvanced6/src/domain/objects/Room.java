@@ -1,7 +1,6 @@
 package domain.objects;
 
-import domain.exceptions.IlluminanceTooMuchException;
-import domain.exceptions.SpaceUsageTooMuchException;
+import domain.utils.Const;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,25 +52,34 @@ public class Room {
 
     }
 
-    public int getSumLk() throws IlluminanceTooMuchException {
+    public int getSumLk() {
 
         int totalSumLk = 0;
-        int windowsLk = getQuantityWindows() * 700;
+        int windowsLk = getQuantityWindows() * Const.WINDOW_LK;
 
         for (Light sumLight : lightList) {
             totalSumLk = totalSumLk + sumLight.getLk();
         }
         totalSumLk = totalSumLk + windowsLk;
 
-        if (totalSumLk > 4000) {
-            throw new IlluminanceTooMuchException();
-        }
-
         return totalSumLk;
 
     }
 
-    public String getDataSquare() throws SpaceUsageTooMuchException {
+    public int getPercentOccupiedSquare() {
+        int sumSubjects = 0;
+        int percentOccupiedSquare;
+
+        for (Subject subject : subjectList) {
+            sumSubjects += subject.getSquare();
+        }
+
+        percentOccupiedSquare = (sumSubjects * 100) / getSquare();
+
+        return percentOccupiedSquare;
+    }
+
+    public String getDataSquare() {
 
         int sumSubjects = 0;
         int freeSquare;
@@ -85,10 +93,6 @@ public class Room {
         freeSquare = getSquare() - sumSubjects;
         percentOccupiedSquare = (sumSubjects * 100) / getSquare();
         percentFreeSquare = 100 - percentOccupiedSquare;
-
-        if (percentOccupiedSquare > 70) {
-            throw new SpaceUsageTooMuchException();
-        }
 
         return "( занято " + sumSubjects + " м²"
                 + " гарантированно свободно " + freeSquare + " м²"

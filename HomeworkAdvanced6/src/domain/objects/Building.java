@@ -1,8 +1,5 @@
 package domain.objects;
 
-import domain.exceptions.IlluminanceTooMuchException;
-import domain.exceptions.SpaceUsageTooMuchException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +22,7 @@ public class Building {
 
     }
 
-    public void describe() throws IlluminanceTooMuchException, SpaceUsageTooMuchException {
+    public void describe() {
 
         System.out.println(getBuildingName() + "\n");
 
