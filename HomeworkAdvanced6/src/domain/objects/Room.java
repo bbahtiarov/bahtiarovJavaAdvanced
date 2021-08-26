@@ -1,5 +1,7 @@
 package domain.objects;
 
+import domain.exceptions.IlluminanceTooMuchException;
+import domain.exceptions.SpaceUsageTooMuchException;
 import domain.utils.Const;
 
 import java.util.ArrayList;
@@ -40,13 +42,25 @@ public class Room {
         return square;
     }
 
-    public void addLight(Light light) {
+    public void addLight(Light light) throws IlluminanceTooMuchException {
+
+        if (getSumLk() > Const.ROOM_LK_LIMIT) {
+
+            throw new IlluminanceTooMuchException();
+
+        }
 
         lightList.add(light);
 
     }
 
-    public void addSubject(Subject subject) {
+    public void addSubject(Subject subject) throws SpaceUsageTooMuchException{
+
+        if ( getPercentOccupiedSquare() > Const.SQUARE_LIMIT ) {
+
+            throw new SpaceUsageTooMuchException();
+
+        }
 
         subjectList.add(subject);
 

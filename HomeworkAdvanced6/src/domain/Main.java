@@ -6,7 +6,6 @@ import domain.objects.Building;
 import domain.objects.Light;
 import domain.objects.Room;
 import domain.objects.Subject;
-import domain.utils.Const;
 
 public class Main {
 
@@ -19,7 +18,7 @@ public class Main {
         Subject subject2 = new Subject("Кресло мягкое", 5);
 
         Room room1 = new Room("Комната 1", 3, 100);
-        Room room2 = new Room("Комната 2", 20, 90);
+        Room room2 = new Room("Комната 2", 2, 90);
 
         try {
 
@@ -29,16 +28,8 @@ public class Main {
             room2.addLight(light1);
             room2.addLight(light2);
 
-            if (
-                    room1.getSumLk() > Const.ROOM_LK_LIMIT
-                    || room2.getSumLk() > Const.ROOM_LK_LIMIT
-            ) {
-
-                throw  new IlluminanceTooMuchException();
-
-            }
-
         } catch (IlluminanceTooMuchException e) {
+            System.out.println("Вы превысили допустимое лк");
             e.printStackTrace();
         }
         try {
@@ -49,17 +40,8 @@ public class Main {
             room2.addSubject(subject1);
             room2.addSubject(subject2);
 
-            if (
-                    room1.getPercentOccupiedSquare() > Const.SQUARE_LIMIT
-                    || room2.getPercentOccupiedSquare() > Const.SQUARE_LIMIT
-            ) {
-
-                throw new SpaceUsageTooMuchException();
-
-            }
-
-
         } catch (SpaceUsageTooMuchException e) {
+            System.out.println("Вы превысили допустимую площадь");
             e.printStackTrace();
         }
 
