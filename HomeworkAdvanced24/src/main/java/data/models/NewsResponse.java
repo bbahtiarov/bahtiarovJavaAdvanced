@@ -1,10 +1,11 @@
-package domain.models;
+package data.models;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
+import java.util.List;
 
 @XmlType()
 @XmlRootElement(name = "root")
@@ -15,7 +16,7 @@ public class NewsResponse {
 
     @XmlElement(name = "element")
     @XmlElementWrapper
-    ArrayList <Article> news = new ArrayList <Article>();
+    List <Article> news = new ArrayList <Article>();
 
 
     // Getter Methods
@@ -28,7 +29,7 @@ public class NewsResponse {
         this.name = name;
     }
 
-    public ArrayList<Article> getNews() {
+    public List<Article> getNews() {
         return news;
     }
 

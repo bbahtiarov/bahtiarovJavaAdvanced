@@ -1,9 +1,9 @@
-package domain;
+package data.parsers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import domain.models.NewsResponse;
-import utils.DateJsonDeserializer;
+import data.models.NewsResponse;
+import data.dateAdapters.DateJsonDeserializer;
 
 import java.io.FileReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package utils;
+package data.dateAdapters;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -12,13 +12,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static data.utils.Consts.DATE_FORMAT;
+
 public class DateJsonDeserializer implements JsonDeserializer<Date> {
 
     @Override
     public Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
         String date = element.getAsString();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd HH:mm:ss zzz", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         try {

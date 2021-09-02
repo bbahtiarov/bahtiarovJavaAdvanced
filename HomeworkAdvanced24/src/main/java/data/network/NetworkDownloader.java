@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class NetworkDownloader {
 
-    public static void downloadFile(String pathName, String url) {
+    public void downloadFile(String pathName, String url) {
 
         File file = new File(pathName);
         InputStream inputStream = null;

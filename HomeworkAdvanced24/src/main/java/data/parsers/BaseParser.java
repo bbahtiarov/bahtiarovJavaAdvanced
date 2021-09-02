@@ -1,6 +1,6 @@
-package domain;
+package data.parsers;
 
-import domain.models.NewsResponse;
+import data.models.NewsResponse;
 
 public interface BaseParser {
 

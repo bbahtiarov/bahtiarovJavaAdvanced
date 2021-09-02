@@ -1,7 +1,7 @@
-package domain;
+package data.parsers;
 
-import domain.models.Article;
-import domain.models.NewsResponse;
+import data.models.Article;
+import data.models.NewsResponse;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

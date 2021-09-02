@@ -1,6 +1,6 @@
-package domain.models;
+package data.models;
 
-import utils.DateXmlAdapter;
+import data.dateAdapters.DateXmlAdapter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;

@@ -1,24 +1,35 @@
-import domain.BaseParser;
-import domain.GsonAppParser;
-import domain.XmlAppParser;
-import domain.models.Article;
-import domain.models.NewsResponse;
+import data.network.NetworkDownloader;
+import data.repositories.ArticlesRepositoryImpl;
+import domain.usecases.GetArticlesByKeyWordUseCase;
+import domain.usecases.LoadNewsResponseUseCase;
+import domain.usecases.SortNewsResponseUseCase;
 
-import java.util.Comparator;
 import java.util.Scanner;
-
-import static data.network.NetworkDownloader.downloadFile;
-import static utils.Consts.*;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        NetworkDownloader networkDownloader = new NetworkDownloader();
+        ArticlesRepositoryImpl repository = new ArticlesRepositoryImpl(networkDownloader);
+
         chooseDownloadFile();
+
+        Scanner inputFileNameScanner = new Scanner(System.in);
+        String inputFileName =  inputFileNameScanner.nextLine();
+
+        downloadFile(inputFileName, repository);
+
+        chooseOperation();
+
+        Scanner inputNumberOperationScanner = new Scanner(System.in);
+        String inputNumberOperation =  inputNumberOperationScanner.nextLine();
+
+        executeOperation(inputNumberOperation, inputFileName, repository);
 
     }
 
-    private static void chooseDownloadFile () {
+    private static void chooseDownloadFile() {
 
         System.out.println(
                 "Выберете какой скачать файл: " + "\n"
@@ -26,28 +37,18 @@ public class Main {
                         + "Наберите xml, чтобы скачать xml файл"
         );
 
-        Scanner scanner = new Scanner(System.in);
-        String downloadFile = scanner.nextLine();
+    }
 
-        switch (downloadFile) {
-            case "json" -> {
-                downloadFile(JSON_PATH_NAME, JSON_API_URL);
-                System.out.println("Файл скачан!");
-                break;
-            }
-            case "xml" -> {
-                downloadFile(XML_PATH_NAME, XML_API_URL);
-                System.out.println("Файл скачан!");
-                break;
-            }
-            default -> System.out.println("Неверный ввод, повторите еще раз") ;
-        }
+    private static void downloadFile(String inputFileName, ArticlesRepositoryImpl repository) {
 
-        chooseOperation(downloadFile);
+        LoadNewsResponseUseCase loadNewsResponseUseCase = new LoadNewsResponseUseCase(repository);
+        loadNewsResponseUseCase.execute(inputFileName);
+
+        System.out.println("Файл скачан!");
 
     }
 
-    private static void chooseOperation(String downloadFile) {
+    private static void chooseOperation() {
 
         System.out.println(
                 "Выберете возможные действия: " + "\n"
@@ -57,106 +58,50 @@ public class Main {
                         " по ключевому слову"
         );
 
-        Scanner scanner = new Scanner(System.in);
-        String  inputString = scanner.nextLine();
-
-        executeFirstOperation(inputString, downloadFile);
-        executeSecondOperation(inputString, downloadFile);
-
     }
 
-    private static void executeFirstOperation (
-            String inputString,
-            String downloadFile
+    private static void executeOperation(
+            String inputNumberOperation,
+            String inputFileName,
+            ArticlesRepositoryImpl repository
     ) {
 
-        NewsResponse newsResponse;
-        BaseParser parser;
-
-        if (inputString.equals("1")) {
-
-            switch (downloadFile) {
-                case "json" -> {
-
-                    parser = new GsonAppParser();
-                    newsResponse = parser.parse(JSON_PATH_NAME);
-
-                    sortNewsResponse(newsResponse);
-                    System.out.println(newsResponse.getNews().toString());
-
-                    break;
-                }
-                case "xml" -> {
-                    parser = new XmlAppParser();
-                    newsResponse = parser.parse(XML_PATH_NAME);
-                    sortNewsResponse(newsResponse);
-                    System.out.println(newsResponse.getNews().toString());
-
-                    break;
-                }
-                default -> System.out.println("Произошла ошибка");
-
-            }
+        if (inputNumberOperation.equals("1")) {
+            sortNewsResponse(inputFileName, repository);
         }
-    }
 
-    private static void executeSecondOperation (
-            String inputString,
-            String downloadFile
-    ) {
+        if (inputNumberOperation.equals("2")) {
 
-        NewsResponse newsResponse;
-        BaseParser parser;
-
-        if (inputString.equals("2")) {
             System.out.println("Введите ключевое слово");
             Scanner searchScanner = new Scanner(System.in);
             String keyWord = searchScanner.nextLine();
 
-            switch (downloadFile) {
-                case "json" -> {
-                    parser = new GsonAppParser();
-                    newsResponse = parser.parse(JSON_PATH_NAME);
-
-                    getElementOfList(newsResponse, keyWord);
-
-                    break;
-                }
-                case "xml" -> {
-                    parser = new XmlAppParser();
-                    newsResponse = parser.parse(XML_PATH_NAME);
-
-                    getElementOfList(newsResponse, keyWord);
-
-                    break;
-                }
-                default -> System.out.println("Произошла ошибка");
-            }
-
-        }
-    }
-
-    private static void getElementOfList(NewsResponse newsResponse, String keyWord) {
-
-        for (Article article: newsResponse.getNews()) {
-            for (String key: article.getKeywords()){
-                if (key.equals(keyWord)) {
-
-                    System.out.println("Новость с этим словом: " + article);
-
-                }
-            }
+            getArticleByKeyWord(inputFileName, keyWord, repository);
         }
 
     }
 
-    private static void sortNewsResponse(NewsResponse newsResponse) {
+    private static void sortNewsResponse(
+            String inputFileName,
+            ArticlesRepositoryImpl repository
+    ) {
 
-        newsResponse.getNews().sort(new Comparator<Article>() {
-            public int compare(Article o1, Article o2) {
-                return o1.getDate().compareTo(o2.getDate());
-            }
-        });
+        SortNewsResponseUseCase sortNewsResponseUseCase = new SortNewsResponseUseCase(repository);
+        System.out.println(sortNewsResponseUseCase.execute(inputFileName));
 
     }
+
+    private static void getArticleByKeyWord(
+            String inputFileName,
+            String keyWord,
+            ArticlesRepositoryImpl repository
+    ) {
+
+        GetArticlesByKeyWordUseCase getArticleByKeyWordUseCase = new GetArticlesByKeyWordUseCase(repository);
+
+        System.out.println("Новости с ключевым словом: ");
+        System.out.println(getArticleByKeyWordUseCase.execute(inputFileName, keyWord));
+
+    }
+
 }
