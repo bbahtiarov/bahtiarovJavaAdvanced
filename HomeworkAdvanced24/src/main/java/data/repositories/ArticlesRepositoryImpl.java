@@ -4,8 +4,6 @@ import data.models.Article;
 import data.models.NewsResponse;
 import data.network.NetworkDownloader;
 import data.parsers.BaseParser;
-import data.parsers.GsonAppParser;
-import data.parsers.XmlAppParser;
 import domain.repositories.ArticlesRepository;
 
 import java.util.List;
@@ -16,23 +14,23 @@ public class ArticlesRepositoryImpl implements ArticlesRepository {
 
     private final NetworkDownloader downloader;
     private List<Article> listData;
+    BaseParser parser;
 
-    public ArticlesRepositoryImpl(NetworkDownloader downloader) {
+    public ArticlesRepositoryImpl(NetworkDownloader downloader, BaseParser parser) {
         this.downloader = downloader;
-
+        this.parser = parser;
     }
 
     @Override
     public List<Article> getArticles(String inputFile) {
 
-        BaseParser parser;
         NewsResponse newsResponse;
 
         switch (inputFile) {
             case "json" -> {
 
                 downloader.downloadFile(JSON_PATH_NAME, JSON_API_URL);
-                parser = new GsonAppParser();
+                //parser = new GsonAppParser();
                 newsResponse = parser.parse(JSON_PATH_NAME);
 
                 listData = newsResponse.getNews();
@@ -43,7 +41,7 @@ public class ArticlesRepositoryImpl implements ArticlesRepository {
             case "xml" -> {
 
                 downloader.downloadFile(XML_PATH_NAME, XML_API_URL);
-                parser = new XmlAppParser();
+                //parser = new XmlAppParser();
                 newsResponse = parser.parse(XML_PATH_NAME);
 
                 listData = newsResponse.getNews();

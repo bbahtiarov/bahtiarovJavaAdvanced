@@ -1,4 +1,7 @@
 import data.network.NetworkDownloader;
+import data.parsers.BaseParser;
+import data.parsers.GsonAppParser;
+import data.parsers.XmlAppParser;
 import data.repositories.ArticlesRepositoryImpl;
 import domain.usecases.GetArticlesByKeyWordUseCase;
 import domain.usecases.LoadNewsResponseUseCase;
@@ -7,17 +10,25 @@ import domain.usecases.SortNewsResponseUseCase;
 import java.util.Scanner;
 
 public class Main {
+    
+    static NetworkDownloader networkDownloader = new NetworkDownloader();
+
+    static BaseParser parser;
+    static ArticlesRepositoryImpl repository;
+
+    static LoadNewsResponseUseCase loadNewsResponseUseCase;
+    static SortNewsResponseUseCase sortNewsResponseUseCase;
+    static GetArticlesByKeyWordUseCase getArticleByKeyWordUseCase;
+
 
     public static void main(String[] args) {
-
-        NetworkDownloader networkDownloader = new NetworkDownloader();
-        ArticlesRepositoryImpl repository = new ArticlesRepositoryImpl(networkDownloader);
 
         chooseDownloadFile();
 
         Scanner inputFileNameScanner = new Scanner(System.in);
         String inputFileName =  inputFileNameScanner.nextLine();
 
+        initFields(inputFileName);
         downloadFile(inputFileName, repository);
 
         chooseOperation();
@@ -25,7 +36,19 @@ public class Main {
         Scanner inputNumberOperationScanner = new Scanner(System.in);
         String inputNumberOperation =  inputNumberOperationScanner.nextLine();
 
-        executeOperation(inputNumberOperation, inputFileName, repository);
+        executeOperation(inputNumberOperation, inputFileName);
+
+    }
+
+    private static void initFields(String inputFileName) {
+
+        if (inputFileName.equals("json")) parser = new GsonAppParser();
+        if (inputFileName.equals("xml")) parser = new XmlAppParser();
+
+        repository = new ArticlesRepositoryImpl(networkDownloader, parser);
+        loadNewsResponseUseCase = new LoadNewsResponseUseCase(repository);
+        sortNewsResponseUseCase = new SortNewsResponseUseCase(repository);
+        getArticleByKeyWordUseCase = new GetArticlesByKeyWordUseCase(repository);
 
     }
 
@@ -41,9 +64,7 @@ public class Main {
 
     private static void downloadFile(String inputFileName, ArticlesRepositoryImpl repository) {
 
-        LoadNewsResponseUseCase loadNewsResponseUseCase = new LoadNewsResponseUseCase(repository);
         loadNewsResponseUseCase.execute(inputFileName);
-
         System.out.println("Файл скачан!");
 
     }
@@ -62,12 +83,11 @@ public class Main {
 
     private static void executeOperation(
             String inputNumberOperation,
-            String inputFileName,
-            ArticlesRepositoryImpl repository
+            String inputFileName
     ) {
 
         if (inputNumberOperation.equals("1")) {
-            sortNewsResponse(inputFileName, repository);
+            sortNewsResponse(inputFileName);
         }
 
         if (inputNumberOperation.equals("2")) {
@@ -76,28 +96,21 @@ public class Main {
             Scanner searchScanner = new Scanner(System.in);
             String keyWord = searchScanner.nextLine();
 
-            getArticleByKeyWord(inputFileName, keyWord, repository);
+            getArticleByKeyWord(inputFileName, keyWord);
         }
 
     }
 
-    private static void sortNewsResponse(
-            String inputFileName,
-            ArticlesRepositoryImpl repository
-    ) {
+    private static void sortNewsResponse(String inputFileName) {
 
-        SortNewsResponseUseCase sortNewsResponseUseCase = new SortNewsResponseUseCase(repository);
         System.out.println(sortNewsResponseUseCase.execute(inputFileName));
 
     }
 
     private static void getArticleByKeyWord(
             String inputFileName,
-            String keyWord,
-            ArticlesRepositoryImpl repository
+            String keyWord
     ) {
-
-        GetArticlesByKeyWordUseCase getArticleByKeyWordUseCase = new GetArticlesByKeyWordUseCase(repository);
 
         System.out.println("Новости с ключевым словом: ");
         System.out.println(getArticleByKeyWordUseCase.execute(inputFileName, keyWord));
